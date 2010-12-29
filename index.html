@@ -15,6 +15,7 @@
         $inputs.eq(2).timepicker({type:'24'});
         $inputs.eq(3).timepicker({type:'100'});
         $inputs.eq(4).timepicker({second:true});
+        $inputs.eq(5).timepicker({format:'number'});
 
         $('button').click(function () {
           alert($(this).siblings('input').val());
@@ -46,6 +47,11 @@
     </div>
     <div>
       <h2>include second</h2>
+      <input/>
+      <button>get time value</button>
+    </div>
+    <div>
+      <h2>number format</h2>
       <input/>
       <button>get time value</button>
     </div>

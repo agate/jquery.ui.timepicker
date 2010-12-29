@@ -25,6 +25,11 @@
  *        means timepicker will show the second selectbox
  *      2. false [DEFAULT]
  *        means timepicker will not show the second selectbox
+ *    -> format
+ *      1. 'time' [DEFAULT]
+ *        means the value set into input will be formated as 00:00:00
+ *      2. 'number'
+ *        means the value set into input will be converted into time number(ms)
  */
 
 (function ($) {
@@ -33,7 +38,8 @@
   $.widget("ui.timepicker", {
     options: {
       type:   '12',
-      second: false
+      second: false,
+      format: 'time'
     },
 
     _create: function () {
@@ -152,11 +158,12 @@
       var second = this.$second.val();
 
       if (this.option('type') == '12' && this.$ampm.find('input:checked').val() == 'pm') {
-        hour = parseInt(hour) + 12;
+        hour = parseInt(hour, 10) + 12;
       }
 
       var value = hour + ':' + minute;
       if (this.option('second')) value += ':' + second;
+      if (this.option('format') == 'number') value = parseInt(second, 10) * 1000 + parseInt(minute, 10) * 60 * 1000 + parseInt(hour, 10) * 60 * 60 * 1000;
 
       this.element.val(value);
     }
