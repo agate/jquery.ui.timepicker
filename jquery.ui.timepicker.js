@@ -45,7 +45,6 @@
     _create: function () {
       tpuuid += 1;
       this.uuid = 'timepicker' + tpuuid;
-      this.element.addClass(this.uuid);
       this._validateOptions();
       this._initHTML();
       this._registerEvents();
@@ -83,13 +82,50 @@
     },
 
     _initValue: function () {
-      var matchResult = this.element.val().match(/^(\d\d):(\d\d)(:(\d\d))?$/);
-      if (matchResult) {
-        this.$hour.val(matchResult[1]);
-        this.$minute.val(matchResult[2]);
-        if (matchResult[4]) {
-          this.$second.val(matchResult[4]);
+      var value     = this.element.val();
+      var matchTime = value.match(/^(\d\d):(\d\d)(:(\d\d))?$/);
+      var matchNum  = value.match(/^\d+$/);
+
+      if (matchTime) {
+        var hour = parseInt(matchTime[1], 10);
+        if (this.option('type') == '12') {
+          this.$ampm.find('[value=am]').attr('checked', true);
+          if (hour > 11) {
+            this.$ampm.find('[value=pm]').attr('checked', true);
+            hour = hour - 12;
+          }
         }
+        if (hour < 10) hour = '0' + hour;
+        this.$hour.val(hour);
+        this.$minute.val(matchTime[2]);
+        if (matchTime[4]) {
+          this.$second.val(matchTime[4]);
+        }
+      } else if (matchNum) {
+        var hour = 0, minute = 0, second = 0;
+        var time = Math.floor(parseInt(matchNum[0]) / 1000);
+        if (time > 0) {
+          second = time % 60;
+          time   = Math.floor(time / 60);
+          if (time > 0) {
+            minute = time % 60;
+            hour   = Math.floor(time / 60);
+          }
+        }
+        if (this.option('type') == '12') {
+          this.$ampm.find('[value=am]').attr('checked', true);
+          if (hour > 11) {
+            this.$ampm.find('[value=pm]').attr('checked', true);
+            hour = hour - 12;
+          }
+        }
+        if (hour   < 10) hour   = '0' + hour;
+        if (minute < 10) minute = '0' + hour;
+        if (second < 10) second = '0' + hour;
+
+        this.$hour.val(hour);
+        this.$minute.val(minute);
+        this.$second.val(second);
       } else {
         this._updateElementValue();
       }
@@ -120,7 +156,7 @@
 
     _buildElements: function () {
       var elements = [
-        '<span>',
+        '<span id="' + this.uuid + '">',
           '<span class="timepicker-ampm">',
             '<input type="radio" value="am" id="' + this.uuid + '-am" name="' + this.uuid + '-ampm" checked="checked"/>',
             '<label for="' + this.uuid + '-am">AM</label>',

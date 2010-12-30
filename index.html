@@ -12,10 +12,11 @@
         var $inputs = $('input');
         $inputs.eq(0).timepicker();
         $inputs.eq(1).timepicker();
-        $inputs.eq(2).timepicker({type:'24'});
-        $inputs.eq(3).timepicker({type:'100'});
-        $inputs.eq(4).timepicker({second:true});
-        $inputs.eq(5).timepicker({format:'number'});
+        $inputs.eq(2).timepicker({type:'100'});
+        $inputs.eq(3).timepicker({type:'24'});
+        $inputs.eq(4).timepicker({type:'100'});
+        $inputs.eq(5).timepicker({second:true});
+        $inputs.eq(6).timepicker({format:'number'});
 
         $('button').click(function () {
           alert($(this).siblings('input').val());
@@ -31,8 +32,13 @@
       <button>get time value</button>
     </div>
     <div>
-      <h2>default value</h2>
-      <input value="05:20"/>
+      <h2>default value with [12 hour type] [time format]</h2>
+      <input value="16:20"/>
+      <button>get time value</button>
+    </div>
+    <div>
+      <h2>default value with [100 hour type] [number format]</h2>
+      <input value="129600000"/>
       <button>get time value</button>
     </div>
     <div>
