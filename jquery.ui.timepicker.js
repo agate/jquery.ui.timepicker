@@ -35,17 +35,38 @@
 (function ($) {
   var tpuuid = new Date().getTime();
 
+  var _i18n   = {};
+  _i18n['default'] = {
+    am:     'AM',
+    pm:     'PM',
+    hour:   'Hour(s)',
+    minute: 'Minute(s)',
+    second: 'Second(s)',
+  }
+
+  _i18n['zh_CN'] = {
+    am:     '上午',
+    pm:     '下午',
+    hour:   '小时',
+    minute: '分钟',
+    second: '秒',
+  }
+
   $.widget("ui.timepicker", {
     options: {
-      type:   '12',
-      second: false,
-      format: 'time'
+      type:      '12',
+      second:    false,
+      format:    'time',
+      spliter:   ':',
+      showUnits: false,
+      i18n:      _i18n['default']
     },
 
     _create: function () {
       tpuuid += 1;
       this.uuid = 'timepicker' + tpuuid;
       this._validateOptions();
+      this._populateI18N();
       this._initHTML();
       this._registerEvents();
     },
@@ -53,6 +74,13 @@
     _validateOptions: function () {
       if ($.inArray(this.option('type'), ['12', '24', '100']) == -1) {
         this.option('type', '12');
+      }
+    },
+
+    _populateI18N: function () {
+      var i18n = this.option('i18n');
+      if (typeof(i18n) == 'string') {
+        this.option('i18n', _i18n[i18n]);
       }
     },
 
@@ -66,6 +94,7 @@
       this.$minute   = this.$elements.find('.timepicker-minute:first');
       this.$second   = this.$elements.find('.timepicker-second:first');
       this.$spliters = this.$elements.find('.timepicker-spliter');
+      this.$units    = this.$elements.find('.timepicker-unit');
 
       this._toggleElements();
       this._initValue();
@@ -77,7 +106,14 @@
       }
       if (!this.option('second')) {
         this.$spliters.eq(1).hide();
+        this.$units.eq(2).hide();
         this.$second.hide();
+      }
+      if (!this.option('spliter')) {
+        this.$spliters.hide();
+      }
+      if (!this.option('showUnits')) {
+        this.$units.hide();
       }
     },
 
@@ -159,24 +195,31 @@
         '<span id="' + this.uuid + '">',
           '<span class="timepicker-ampm">',
             '<input type="radio" value="am" id="' + this.uuid + '-am" name="' + this.uuid + '-ampm" checked="checked"/>',
-            '<label for="' + this.uuid + '-am">AM</label>',
+            '<label for="' + this.uuid + '-am">' + this._i18n('am') + '</label>',
             '<input type="radio" value="pm" id="' + this.uuid + '-pm" name="' + this.uuid + '-ampm" />',
-            '<label for="' + this.uuid + '-pm">PM</label>',
+            '<label for="' + this.uuid + '-pm">' + this._i18n('pm') + '</label>',
           '</span>',
           '<select class="timepicker-hour">',
             this._getSelectOptions(parseInt(this.option('type'))).join(''),
           '</select>',
-          '<span class="timepicker-spliter">:</span>',
+          '<span class="timepicker-unit">' + this._i18n('hour') + '</span>',
+          '<span class="timepicker-spliter">' + this.option('spliter') + '</span>',
           '<select class="timepicker-minute">',
             this._getSelectOptions(60).join(''),
           '</select>',
-          '<span class="timepicker-spliter">:</span>',
+          '<span class="timepicker-unit">' + this._i18n('minute') + '</span>',
+          '<span class="timepicker-spliter">' + this.option('spliter') + '</span>',
           '<select class="timepicker-second">',
             this._getSelectOptions(60).join(''),
           '</select>',
+          '<span class="timepicker-unit">' + this._i18n('second') + '</span>',
         '</span>'
       ];
       this.$elements = $(elements.join(''));
+    },
+
+    _i18n: function (key) {
+      return this.option('i18n')[key];
     },
 
     _getSelectOptions: function (to) {
